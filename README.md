@@ -3,6 +3,9 @@
 ## Contributors: Adam Harris, Elizaveta Baranova-Parfenova, Ismalia Elimane Ly, Adrian Duszkiewicz
 
 ### Current Plan: 
+
+- Read up on how regular expressions work
+
 - Clean and preprocess kaggle fake-news dataset
 
 - Find approproate package to quantify emotionality across desired dimensions
