@@ -49,6 +49,7 @@ dependencies:
   - zipp=3.19.2=pyhd8ed1ab_0
   - zlib=1.2.13=h4b97444_1
   - pip:
+    - click==8.1.7
     - contourpy==1.2.1
     - cycler==0.12.1
     - debugpy==1.6.7
@@ -63,6 +64,8 @@ dependencies:
     - matplotlib==3.9.1
     - mpmath==1.3.0
     - networkx==3.3
+    - nltk==3.8.1
+    - nrclex==3.0.0
     - numpy==2.0.0
     - pandas==2.2.2
     - pillow==10.4.0
@@ -72,14 +75,17 @@ dependencies:
     - python-dateutil==2.9.0.post0
     - pytz==2024.1
     - pyzmq==25.1.2
+    - regex==2024.5.15
     - scikit-learn==1.5.1
     - scipy==1.14.0
     - seaborn==0.13.2
     - setuptools==69.5.1
     - sympy==1.13.0
+    - textblob==0.18.0.post0
     - threadpoolctl==3.5.0
     - torch==2.2.2
     - tornado==6.4.1
+    - tqdm==4.66.4
     - tzdata==2024.1
     - wheel==0.43.0
 prefix: /Users/AdamHarris/miniconda3/envs/nlp_neuromatch
