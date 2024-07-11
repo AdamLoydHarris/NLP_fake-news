@@ -1,3 +1,5 @@
+import re
+
 def wp(text):
     text = text.lower()
     text = re.sub('\[.*?\]', '', text)
