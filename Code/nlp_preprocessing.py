@@ -55,14 +55,39 @@ def preprocess_all(x, json_path = r'/Users/AdamHarris/Documents/neuromatch_nlp/N
     x = remove_stopwords(x, cleaned_stopwords)
     return x
 
-def emotion_score_article(article):
+# def emotion_score_article(article):
+#     if not isinstance(article, str):
+#         print(article)
+#     norm_len = len(article)
+#     e_scores = NRCLex(article)
+#     norm_e_scores = {}
+#     norm_e_scores_vect = []
+#     for i in e_scores.raw_emotion_scores.keys():
+#         norm_e_scores[i]= e_scores.raw_emotion_scores[i]/norm_len
+#         norm_e_scores_vect.append(norm_e_scores[i])
+#     return norm_e_scores_vect, norm_e_scores
+def emotion_score_article(article, emotional_labels=['disgust',
+                                                    'trust',
+                                                    'negative',
+                                                    'sadness',
+                                                    'anticipation',
+                                                    'joy',
+                                                    'positive',
+                                                    'anger',
+                                                    'fear',
+                                                    'surprise']):
     if not isinstance(article, str):
         print(article)
     norm_len = len(article)
     e_scores = NRCLex(article)
     norm_e_scores = {}
     norm_e_scores_vect = []
-    for i in e_scores.raw_emotion_scores.keys():
-        norm_e_scores[i]= e_scores.raw_emotion_scores[i]/norm_len
-        norm_e_scores_vect.append(norm_e_scores[i])
-    return norm_e_scores_vect
+    #for i in e_scores.raw_emotion_scores.keys():
+    for i in emotional_labels:
+        if i not in e_scores.raw_emotion_scores.keys():
+            norm_e_scores[i]=0
+            norm_e_scores_vect.append(0)
+        else:
+            norm_e_scores[i]= e_scores.raw_emotion_scores[i]/norm_len
+            norm_e_scores_vect.append(norm_e_scores[i])
+    return norm_e_scores_vect, norm_e_scores
