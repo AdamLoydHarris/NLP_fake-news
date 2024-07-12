@@ -4,6 +4,8 @@ import nltk.corpus
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 import json
+from nrclex import NRCLex
+
 
 def get_word_lengths(input_string):
     """
@@ -47,3 +49,20 @@ def check_stopwords(emotional_words_path = r'/Users/AdamHarris/Documents/neuroma
     cleaned_stopwords = [word for word in s_words if word not in emotional_words.keys()]
     return cleaned_stopwords
 
+def preprocess_all(x, json_path = r'/Users/AdamHarris/Documents/neuromatch_nlp/Neuromatch_NLP/dataset/nrc_en.json'):
+    x = wp(x)
+    cleaned_stopwords = check_stopwords(json_path)
+    x = remove_stopwords(x, cleaned_stopwords)
+    return x
+
+def emotion_score_article(article):
+    if not isinstance(article, str):
+        print(article)
+    norm_len = len(article)
+    e_scores = NRCLex(article)
+    norm_e_scores = {}
+    norm_e_scores_vect = []
+    for i in e_scores.raw_emotion_scores.keys():
+        norm_e_scores[i]= e_scores.raw_emotion_scores[i]/norm_len
+        norm_e_scores_vect.append(norm_e_scores[i])
+    return norm_e_scores_vect
