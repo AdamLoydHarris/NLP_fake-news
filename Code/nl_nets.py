@@ -9,8 +9,6 @@ from torch import nn
 import torch.optim as optim
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader, TensorDataset
-from tqdm.auto import tqdm
-from IPython.display import display
 
 # data and labels at tensors 
 # convert data into dataloaders
