@@ -8,7 +8,7 @@ import torch
 from torch import nn
 import torch.optim as optim
 from torchvision.transforms import ToTensor
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, TensorDataset, random_split
 from tqdm.auto import tqdm
 
 # data and labels at tensors 
@@ -94,9 +94,6 @@ def set_device():
 worker_seed = torch.initial_seed() % 2**32
 np.random.seed(worker_seed)
 random.seed(worker_seed)
-
-SEED = 2021
-set_seed(seed=SEED)
 DEVICE = set_device()
 
 class Net(nn.Module):
@@ -259,3 +256,24 @@ def train_test_classification(net, criterion, optimizer, train_loader,
   return train_acc, test_acc
 
 
+def load_data(data, labels, split_sizes, batch_size, g_seed):
+
+  dataset = TensorDataset(data, labels)
+  train_dataset, val_dataset, test_dataset = random_split(dataset, split_sizes)
+
+  test_loader = DataLoader(test_dataset, batch_size=batch_size,
+                               shuffle=False, num_workers=0,
+                               worker_init_fn=seed_worker,
+                               generator=g_seed)
+
+  val_loader = DataLoader(val_dataset, batch_size=batch_size, drop_last=True,
+                              shuffle=True, num_workers=0,
+                              worker_init_fn=seed_worker,
+                              generator=g_seed)
+
+  train_loader = DataLoader(train_dataset, batch_size=batch_size, drop_last=True,
+                                shuffle=True, num_workers=0,
+                                worker_init_fn=seed_worker,
+                                generator=g_seed)
+
+  return train_loader, val_loader, test_loader
