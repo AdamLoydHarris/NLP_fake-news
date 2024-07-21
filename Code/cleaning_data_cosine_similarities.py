@@ -23,8 +23,7 @@ DEVICE = set_device()
 g_seed = torch.Generator()
 
 # specify PATH
-
-folder_dir = opj('/', 'home', 'lisz', 'PycharmProjects', 'Neuromatch_NLP', 'dataset')
+folder_dir = opj('/', 'Users', 'elizavetaparfenova', 'PycharmProjects', 'Neuromatch', 'dataset')
 
 # load word embeddings (full dataset)
 embed_data_array_train = torch.from_numpy(np.load(opj(folder_dir, 'train_embeddings_200.npy')))
@@ -117,13 +116,31 @@ print(f"Number of data points above threshold: {num_above_threshold}")
 first_column = cosine_similarities[:, 0]
 first_column_np = first_column.numpy()
 # then divide it into three original arrays by the length
+
+len_train = len(arr_labels_train)
+len_test = len(arr_labels_test)
+len_val = len(arr_labels_val)
+
+# Split the array
+arr_train = first_column_np[:len_train]
+arr_test = first_column_np[len_train:len_train + len_test]
+arr_val = first_column_np[len_train + len_test:len_train + len_test + len_val]
 # treshold it to 0.3 by 0 and 1 values
+
+def array_treshold(arr):
+    treshold_labels = []
+    for i in arr:
+        if i <= threshold:
+            treshold_labels.append(0)
+        else:
+            treshold_labels.append(1)
+    return treshold_labels
+
+train_labels = array_treshold(arr_train)
+test_labels = array_treshold(arr_test)
+val_labels = array_treshold(arr_val)
+
 # save it as three arrays for each dataset
-
-def create_similarity_threshold_tensor(cosine_similarities, threshold):
-    # Create binary tensor based on the threshold
-    threshold_tensor = (cosine_similarities > threshold).float()
-    return threshold_tensor
-
-# Create the threshold tensor
-threshold_tensor = create_similarity_threshold_tensor(cosine_similarities, threshold)
+np.save(opj(folder_dir, 'train_cosine_similarity.npy'), train_labels)
+np.save(opj(folder_dir, 'test_cosine_similarity.npy'), test_labels)
+np.save(opj(folder_dir, 'val_cosine_similarity.npy'), val_labels)
