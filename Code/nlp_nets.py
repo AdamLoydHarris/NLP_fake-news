@@ -189,9 +189,10 @@ def train_test_classification(net, criterion, optimizer, train_loader,
   """
   net.train()
   training_losses = []
+  validation_losses = []
   for epoch in tqdm(range(num_epochs)):  # Loop over the dataset multiple times
     running_loss = 0.0
-    for i, data in enumerate(train_loader, 0):
+    for i, data in enumerate(train_loader, 0):    
       # Get the inputs; data is a list of [inputs, labels]
       inputs, labels = data
       inputs = inputs.to(device).float()
@@ -202,15 +203,15 @@ def train_test_classification(net, criterion, optimizer, train_loader,
 
       # forward + backward + optimize
       outputs = net(inputs)
-      print(outputs.sum(dim=0))
+      # print(outputs.sum(dim=0))
 
       loss = criterion(outputs, labels)
       loss.backward()
       optimizer.step()
 
       # Print statistics
-      if verbose:
-        training_losses += [loss.item()]
+      # if verbose:
+      #   training_losses += [loss.item()]
 
   net.eval()
 
@@ -228,6 +229,7 @@ def train_test_classification(net, criterion, optimizer, train_loader,
       total: int
         Number of datapoints in the dataloader
     """
+  
     correct = 0
     total = 0
     for data in data_loader:
@@ -236,6 +238,8 @@ def train_test_classification(net, criterion, optimizer, train_loader,
       labels = labels.to(device).long()
 
       outputs = net(inputs)
+      validation_loss = criterion(outputs, labels)
+      validation_losses.append(validation_loss)
       _, predicted = torch.max(outputs, 1)
       total += labels.size(0)
       correct += (predicted == labels).sum().item()
@@ -256,7 +260,7 @@ def train_test_classification(net, criterion, optimizer, train_loader,
     plt.ylabel('Training loss')
     plt.show()
 
-  return train_acc, test_acc
+  return train_acc, test_acc, training_losses, validation_losses
 
 
 def load_data(train_dataset, val_dataset, test_dataset, batch_size, g_seed):
@@ -288,3 +292,122 @@ def emo_str2arr(list_of_strings):
     all_emo.append(np.array([float(element) for element in float_str_elements]))
   all_emo = np.vstack(all_emo)
   return all_emo
+
+
+def RNN_train_test_classification(net, criterion, optimizer, train_loader,
+                              test_loader, num_epochs=1, verbose=True,
+                              training_plot=False, device=DEVICE):
+  """
+  Accumulate training loss/Evaluate performance
+
+  Args:
+    net: instance of Net class
+      Describes the model with ReLU activation, batch size 128
+    criterion: torch.nn type
+      Criterion combines LogSoftmax and NLLLoss in one single class.
+    optimizer: torch.optim type
+      Implements Adam algorithm.
+    train_loader: torch.utils.data type
+      Combines the train dataset and sampler, and provides an iterable over the given dataset.
+    test_loader: torch.utils.data type
+      Combines the test dataset and sampler, and provides an iterable over the given dataset.
+    num_epochs: int
+      Number of epochs [default: 1]
+    verbose: boolean
+      If True, print statistics
+    training_plot=False
+      If True, display training plot
+    device: string
+      CUDA/GPU if available, CPU otherwise
+
+  Returns:
+    Nothing
+  """
+  net.train()
+  training_losses = []
+  validation_losses = []
+  for epoch in tqdm(range(num_epochs)):  # Loop over the dataset multiple times
+    running_loss = 0.0
+    for i, data in enumerate(train_loader, 0):    
+      # Get the inputs; data is a list of [inputs, labels]
+      inputs, labels = data
+      inputs = inputs.to(device).long()
+      labels = labels.to(device).long()
+
+      # Zero the parameter gradients
+      optimizer.zero_grad()
+
+      # forward + backward + optimize
+      outputs = net(inputs)
+      # print(outputs.sum(dim=0))
+
+      loss = criterion(outputs, labels)
+      loss.backward()
+      optimizer.step()
+
+      # Print statistics
+      # if verbose:
+      training_losses += [loss.item()]
+
+  net.eval()
+
+  for i, data in enumerate(test_loader, 0):    
+    # Get the inputs; data is a list of [inputs, labels]
+    inputs, labels = data
+    inputs = inputs.to(device).long()
+    labels = labels.to(device).long()
+    # forward + backward + optimize
+    outputs = net(inputs)
+    # print(outputs.sum(dim=0))
+
+    val_loss = criterion(outputs, labels)
+
+    # Print statistics
+    # if verbose:
+    validation_losses += [val_loss.item()]
+
+
+  def test(data_loader):
+    """
+    Function to gauge network performance
+
+    Args:
+      data_loader: torch.utils.data type
+      Combines the test dataset and sampler, and provides an iterable over the given dataset.
+
+    Returns:
+      acc: float
+        Performance of the network
+      total: int
+        Number of datapoints in the dataloader
+    """
+  
+    correct = 0
+    total = 0
+    for data in data_loader:
+      inputs, labels = data
+      inputs = inputs.to(device).float()
+      labels = labels.to(device).long()
+
+      outputs = net(inputs)
+      _, predicted = torch.max(outputs, 1)
+      total += labels.size(0)
+      correct += (predicted == labels).sum().item()
+
+    acc = 100 * correct / total
+    return total, acc
+
+  train_total, train_acc = test(train_loader)
+  test_total, test_acc = test(test_loader)
+
+  if verbose:
+    print(f"Accuracy on the {train_total} training samples: {train_acc:0.2f}")
+    print(f"Accuracy on the {test_total} testing samples: {test_acc:0.2f}")
+
+  if training_plot:
+    plt.plot(training_losses)
+    plt.xlabel('Batch')
+    plt.ylabel('Training loss')
+    plt.show()
+
+  return train_acc, test_acc, training_losses, validation_losses
