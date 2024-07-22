@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 # PyTorch libraries
 import torch
 from torch import nn
+import torch.nn.functional as F
 import torch.optim as optim
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader, TensorDataset, random_split
@@ -153,6 +154,7 @@ class Net(nn.Module):
     x = x.view(-1, self.input_feature_num)
 
     logits = self.mlp(x) # Forward pass of MLP
+    #logits = F.softmax(logits, dim=0) # softmax
     return logits
 
 
@@ -200,6 +202,7 @@ def train_test_classification(net, criterion, optimizer, train_loader,
 
       # forward + backward + optimize
       outputs = net(inputs)
+      print(outputs.sum(dim=0))
 
       loss = criterion(outputs, labels)
       loss.backward()
@@ -256,24 +259,32 @@ def train_test_classification(net, criterion, optimizer, train_loader,
   return train_acc, test_acc
 
 
-def load_data(data, labels, split_sizes, batch_size, g_seed):
-
-  dataset = TensorDataset(data, labels)
-  train_dataset, val_dataset, test_dataset = random_split(dataset, split_sizes)
-
-  test_loader = DataLoader(test_dataset, batch_size=batch_size,
-                               shuffle=False, num_workers=0,
-                               worker_init_fn=seed_worker,
-                               generator=g_seed)
-
-  val_loader = DataLoader(val_dataset, batch_size=batch_size, drop_last=True,
-                              shuffle=True, num_workers=0,
-                              worker_init_fn=seed_worker,
-                              generator=g_seed)
+def load_data(train_dataset, val_dataset, test_dataset, batch_size, g_seed):
 
   train_loader = DataLoader(train_dataset, batch_size=batch_size, drop_last=True,
                                 shuffle=True, num_workers=0,
                                 worker_init_fn=seed_worker,
                                 generator=g_seed)
 
+  val_loader = DataLoader(val_dataset, batch_size=batch_size, drop_last=True,
+                              shuffle=True, num_workers=0,
+                              worker_init_fn=seed_worker,
+                              generator=g_seed)
+
+  test_loader = DataLoader(test_dataset, batch_size=batch_size,
+                               shuffle=False, num_workers=0,
+                               worker_init_fn=seed_worker,
+                               generator=g_seed)
+
   return train_loader, val_loader, test_loader
+
+
+def emo_str2arr(list_of_strings):
+  all_emo = []
+  for float_list_str in list_of_strings:
+    float_list_str = float_list_str.strip('[]')
+    float_str_elements = float_list_str.split()
+    # Step 3: Convert string elements to floats
+    all_emo.append(np.array([float(element) for element in float_str_elements]))
+  all_emo = np.vstack(all_emo)
+  return all_emo
