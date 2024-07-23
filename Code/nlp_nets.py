@@ -190,16 +190,13 @@ def train_test_classification(net, criterion, optimizer, train_loader,
   """
   net.train()
   training_losses = []
-<<<<<<< HEAD
   validation_losses = []
   for epoch in tqdm(range(num_epochs)):  # Loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(train_loader, 0):    
-=======
   for epoch in tqdm(range(num_epochs)):  # Loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(train_loader, 0):
->>>>>>> 2c499b903b14c7b1f1bfeafe32aed31094cf1d76
       # Get the inputs; data is a list of [inputs, labels]
       inputs, labels = data
       inputs = inputs.to(device).float()
@@ -210,24 +207,22 @@ def train_test_classification(net, criterion, optimizer, train_loader,
 
       # forward + backward + optimize
       outputs = net(inputs)
-<<<<<<< HEAD
+
       # print(outputs.sum(dim=0))
-=======
+
       print(outputs.sum(dim=0))
->>>>>>> 2c499b903b14c7b1f1bfeafe32aed31094cf1d76
 
       loss = criterion(outputs, labels)
       loss.backward()
       optimizer.step()
 
       # Print statistics
-<<<<<<< HEAD
+
       # if verbose:
       #   training_losses += [loss.item()]
-=======
+
       if verbose:
         training_losses += [loss.item()]
->>>>>>> 2c499b903b14c7b1f1bfeafe32aed31094cf1d76
 
   net.eval()
 
@@ -245,10 +240,7 @@ def train_test_classification(net, criterion, optimizer, train_loader,
       total: int
         Number of datapoints in the dataloader
     """
-<<<<<<< HEAD
-  
-=======
->>>>>>> 2c499b903b14c7b1f1bfeafe32aed31094cf1d76
+
     correct = 0
     total = 0
     for data in data_loader:
@@ -257,11 +249,7 @@ def train_test_classification(net, criterion, optimizer, train_loader,
       labels = labels.to(device).long()
 
       outputs = net(inputs)
-<<<<<<< HEAD
-      validation_loss = criterion(outputs, labels)
-      validation_losses.append(validation_loss)
-=======
->>>>>>> 2c499b903b14c7b1f1bfeafe32aed31094cf1d76
+
       _, predicted = torch.max(outputs, 1)
       total += labels.size(0)
       correct += (predicted == labels).sum().item()
@@ -282,11 +270,10 @@ def train_test_classification(net, criterion, optimizer, train_loader,
     plt.ylabel('Training loss')
     plt.show()
 
-<<<<<<< HEAD
+
   return train_acc, test_acc, training_losses, validation_losses
-=======
-  return train_acc, test_acc
->>>>>>> 2c499b903b14c7b1f1bfeafe32aed31094cf1d76
+
+
 
 
 def load_data(train_dataset, val_dataset, test_dataset, batch_size, g_seed):
@@ -317,7 +304,7 @@ def emo_str2arr(list_of_strings):
     # Step 3: Convert string elements to floats
     all_emo.append(np.array([float(element) for element in float_str_elements]))
   all_emo = np.vstack(all_emo)
-<<<<<<< HEAD
+
   return all_emo
 
 
@@ -438,6 +425,5 @@ def RNN_train_test_classification(net, criterion, optimizer, train_loader,
     plt.show()
 
   return train_acc, test_acc, training_losses, validation_losses
-=======
-  return all_emo
->>>>>>> 2c499b903b14c7b1f1bfeafe32aed31094cf1d76
+
+
