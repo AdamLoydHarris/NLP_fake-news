@@ -1,3 +1,4 @@
+# %%
 import random
 import numpy as np
 import pandas as pd
@@ -11,7 +12,7 @@ import torch.optim as optim
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader, TensorDataset, random_split
 from tqdm.auto import tqdm
-
+# %%
 # data and labels at tensors 
 # convert data into dataloaders
 # optimiser
